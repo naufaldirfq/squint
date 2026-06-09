@@ -36,6 +36,15 @@ export default function AuditForm() {
       reader.onloadend = () => {
         setScreenshot(reader.result as string);
         setError(null);
+
+        // Track screenshot upload via drag-and-drop
+        if (typeof window !== "undefined" && window.pendo) {
+          pendo.track("screenshot_uploaded", {
+            uploadMethod: "drag_and_drop",
+            fileType: file.type,
+            fileSize: file.size,
+          });
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -49,6 +58,15 @@ export default function AuditForm() {
     reader.onloadend = () => {
       setScreenshot(reader.result as string);
       setError(null);
+
+      // Track screenshot upload via file picker
+      if (typeof window !== "undefined" && window.pendo) {
+        pendo.track("screenshot_uploaded", {
+          uploadMethod: "file_picker",
+          fileType: file.type,
+          fileSize: file.size,
+        });
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -69,10 +87,22 @@ export default function AuditForm() {
 
     setIsLoading(true);
     setError(null);
-    
+
+    const inputMethod = screenshot ? (url ? "both" : "screenshot") : "url";
+
+    // Track audit submission intent
+    if (typeof window !== "undefined" && window.pendo) {
+      pendo.track("audit_submitted", {
+        url: url || "",
+        persona,
+        hasScreenshot: !!screenshot,
+        inputMethod,
+      });
+    }
+
     try {
       setLoadingStep("Step 1/3: Capturing page view...");
-      
+
       const response = await fetch("/api/audit", {
         method: "POST",
         headers: {
@@ -94,10 +124,31 @@ export default function AuditForm() {
 
       setLoadingStep("Step 3/3: Generating scorecard report...");
       const data = await response.json();
-      
+
+      // Track successful audit completion
+      if (typeof window !== "undefined" && window.pendo) {
+        pendo.track("audit_completed", {
+          auditId: data.id,
+          url: url || "",
+          persona,
+        });
+      }
+
       router.push(`/r/${data.id}`);
     } catch (err: any) {
       console.error(err);
+
+      // Track audit submission failure
+      if (typeof window !== "undefined" && window.pendo) {
+        pendo.track("audit_submission_failed", {
+          url: url || "",
+          persona,
+          hasScreenshot: !!screenshot,
+          errorMessage: (err.message || "Unknown error").substring(0, 200),
+          inputMethod,
+        });
+      }
+
       setError(err.message || "An unexpected error occurred.");
       setIsLoading(false);
     }
