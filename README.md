@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Squint - Brutally Honest Landing Page Audits
 
-## Getting Started
+Squint is a neo-brutalist landing page audit tool built for the MtP Hackathon. It performs a mock "5-second user scan" of any landing page by deploying specialized AI persona critics to analyze copy, design, hierarchy, and actions. It provides actionable, copy-ready suggestions, a score card, and visual "Before & After" mockup transformations.
 
-First, run the development server:
+## 🚀 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+* **3 Dedicated AI Critics:**
+  * **Busy Founder:** Zero patience, hates jargon, looking for immediate business value, cost, and time-to-setup.
+  * **Skeptical Engineer:** Despises marketing fluff, looks for API code snippets, pricing, self-serve access, and docs.
+  * **Non-technical Buyer:** Focuses on security, trust, company logos, testimonials, and team benefits.
+* **Scorecard Metrics:** Audits pages across five core vectors (Value Prop, Primary Action, Trust, Visual Hierarchy, and Copy).
+* **Before/After Transformation Mockup:** Provides side-by-side previews of the visual page transformation based on the top recommendation.
+* **Visual Access Block Detection:** If a target website blocks the cloud screenshot crawler (e.g., CloudFront 403 blocks or Cloudflare CAPTCHAs), Gemini visually identifies the block page and prompts you to upload a manual screenshot.
+* **Interactive Drag & Drop:** Supports both standard browsing and full-featured, state-driven drag-and-drop screenshot uploads for localhost/local projects.
+* **Dynamic Sharing:** Generates custom edge-compatible OpenGraph scorecard image previews (`/api/og/[id]`) for social sharing.
+* **Data Store:** Local filesystem JSON database (`.data/audits.json`) for audit history.
+
+## 🛠 Tech Stack
+
+* **Framework:** Next.js 16 (App Router + Turbopack)
+* **Styling:** Tailwind CSS v4 (Pure CSS-in-JS + CSS variables design system)
+* **AI Model:** Gemini 3.1 Flash-Lite (via `@google/generative-ai`)
+* **Screenshot Engine:** Microlink API (for cloud capture)
+
+---
+
+## ⚙️ Getting Started
+
+### 1. Environment Configuration
+Create a `.env.local` file in the root of the project and add your Gemini API key:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Running the Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📸 Local/Localhost Auditing
+Because public cloud screenshot crawlers cannot access your local loopback (`localhost:3000`), when you audit a local project, Squint's API will output a warning. 
+Simply take a screenshot of your local page manually, drag-and-drop it into the **Fallback Screenshot Upload** box, choose your critic, and click **Audit** to run a real Gemini Vision analysis on your local design!
