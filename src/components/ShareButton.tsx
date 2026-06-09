@@ -8,6 +8,17 @@ export default function ShareButton() {
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+
+      // Track audit share via clipboard copy
+      if (typeof window !== "undefined" && window.pendo) {
+        const pathParts = window.location.pathname.split("/");
+        const auditId = pathParts[pathParts.length - 1] || "";
+        pendo.track("audit_shared", {
+          auditId,
+          shareUrl: window.location.href,
+        });
+      }
+
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {

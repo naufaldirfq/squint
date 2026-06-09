@@ -4,6 +4,31 @@ import { saveAudit } from "@/lib/db";
 import { captureScreenshot } from "@/lib/screenshot";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+const PENDO_TRACK_URL = "https://data.pendo.io/data/track";
+const PENDO_INTEGRATION_KEY = "37f353d5-8a81-465c-a538-c2bcb1b7e7ba";
+
+async function pendoTrackServer(event: string, properties: Record<string, unknown>) {
+  try {
+    await fetch(PENDO_TRACK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-pendo-integration-key": PENDO_INTEGRATION_KEY,
+      },
+      body: JSON.stringify({
+        type: "track",
+        event,
+        visitorId: "system",
+        accountId: "system",
+        timestamp: Date.now(),
+        properties,
+      }),
+    });
+  } catch (err) {
+    console.error("Pendo server-side track failed:", err);
+  }
+}
+
 const PERSONA_RUBRICS = {
   founder: {
     name: "Busy Founder",
@@ -147,6 +172,14 @@ export async function POST(req: NextRequest) {
         screenshotBase64 = await captureScreenshot(url);
       } catch (err: any) {
         console.error("Screenshot capture failed:", err);
+
+        // Track screenshot capture failure
+        pendoTrackServer("screenshot_capture_failed", {
+          url: url || "",
+          persona,
+          errorMessage: (err.message || "Unknown error").substring(0, 200),
+        });
+
         return NextResponse.json(
           { error: `Screenshot capture failed: ${err.message || "The screenshot service could not access the URL"}. Please take a screenshot manually and upload it using the fallback uploader below.` },
           { status: 400 }
@@ -207,6 +240,14 @@ export async function POST(req: NextRequest) {
         auditResult = JSON.parse(text);
 
         if (auditResult.error) {
+          // Track access block detection
+          pendoTrackServer("access_block_detected", {
+            url: url || "",
+            persona,
+            blockType: "ai_detected",
+            errorMessage: (auditResult.error as string).substring(0, 200),
+          });
+
           return NextResponse.json({ error: auditResult.error }, { status: 400 });
         }
       } catch (error: any) {
@@ -215,10 +256,27 @@ export async function POST(req: NextRequest) {
         if (error.message && error.message.includes("JSON")) {
           return NextResponse.json({ error: "Failed to parse critique from Gemini. Please try again with a cleaner screenshot." }, { status: 400 });
         }
+        // Track fallback to mock audit
+        pendoTrackServer("audit_fallback_to_mock", {
+          url: url || "",
+          persona,
+          errorMessage: (error.message || "Unknown error").substring(0, 200),
+          hasGeminiKey: true,
+        });
+
         auditResult = getMockAudit(url || "Uploaded Screenshot", persona);
       }
     } else {
       console.log("No GEMINI_API_KEY configured. Using local mock generator.");
+
+      // Track fallback to mock audit (no API key)
+      pendoTrackServer("audit_fallback_to_mock", {
+        url: url || "",
+        persona,
+        errorMessage: "No GEMINI_API_KEY configured",
+        hasGeminiKey: false,
+      });
+
       auditResult = getMockAudit(url || "Uploaded Screenshot", persona);
     }
 
