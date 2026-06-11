@@ -1,5 +1,4 @@
-import fs from "fs";
-import path from "path";
+import { createClient } from "@supabase/supabase-js";
 
 export interface AuditFix {
   id: number;
@@ -29,40 +28,88 @@ export interface AuditRecord {
   topFixes: AuditFix[];
 }
 
-const DATA_DIR = path.join(process.cwd(), ".data");
-const DATA_FILE = path.join(DATA_DIR, "audits.json");
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-// Helper to ensure data directory and file exist
-function ensureDb() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify({ audits: {} }), "utf-8");
-  }
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn("Supabase credentials missing. Database operations will fail.");
 }
 
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 export async function saveAudit(record: AuditRecord): Promise<void> {
-  ensureDb();
-  const fileContent = fs.readFileSync(DATA_FILE, "utf-8");
-  const db = JSON.parse(fileContent);
-  db.audits[record.id] = record;
-  fs.writeFileSync(DATA_FILE, JSON.stringify(db, null, 2), "utf-8");
+  const { error } = await supabase.from("audits").insert({
+    id: record.id,
+    url: record.url,
+    persona: record.persona,
+    timestamp: record.timestamp,
+    screenshot: record.screenshot,
+    five_second_read: record.fiveSecondRead,
+    scores: record.scores,
+    narration: record.narration,
+    top_fixes: record.topFixes,
+  });
+
+  if (error) {
+    console.error("Error saving audit to Supabase:", error);
+    throw new Error(`Failed to save audit: ${error.message}`);
+  }
 }
 
 export async function getAudit(id: string): Promise<AuditRecord | null> {
-  ensureDb();
-  const fileContent = fs.readFileSync(DATA_FILE, "utf-8");
-  const db = JSON.parse(fileContent);
-  return db.audits[id] || null;
+  const { data, error } = await supabase
+    .from("audits")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      // Record not found
+      return null;
+    }
+    console.error("Error getting audit from Supabase:", error);
+    throw new Error(`Failed to get audit: ${error.message}`);
+  }
+
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    url: data.url,
+    persona: data.persona,
+    timestamp: data.timestamp,
+    screenshot: data.screenshot,
+    fiveSecondRead: data.five_second_read,
+    scores: data.scores as any,
+    narration: data.narration,
+    topFixes: data.top_fixes as any[],
+  };
 }
 
 export async function listAudits(limit: number = 10): Promise<AuditRecord[]> {
-  ensureDb();
-  const fileContent = fs.readFileSync(DATA_FILE, "utf-8");
-  const db = JSON.parse(fileContent);
-  const list = Object.values(db.audits) as AuditRecord[];
-  // Sort descending by timestamp
-  list.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  return list.slice(0, limit);
+  const { data, error } = await supabase
+    .from("audits")
+    .select("*")
+    .order("timestamp", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("Error listing audits from Supabase:", error);
+    throw new Error(`Failed to list audits: ${error.message}`);
+  }
+
+  if (!data) return [];
+
+  return data.map((row) => ({
+    id: row.id,
+    url: row.url,
+    persona: row.persona,
+    timestamp: row.timestamp,
+    screenshot: row.screenshot,
+    fiveSecondRead: row.five_second_read,
+    scores: row.scores as any,
+    narration: row.narration,
+    topFixes: row.top_fixes as any[],
+  }));
 }
