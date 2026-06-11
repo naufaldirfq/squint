@@ -7,7 +7,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const PENDO_TRACK_URL = "https://data.pendo.io/data/track";
 const PENDO_INTEGRATION_KEY = "37f353d5-8a81-465c-a538-c2bcb1b7e7ba";
 
-async function pendoTrackServer(event: string, properties: Record<string, unknown>) {
+async function pendoTrackServer(event: string, properties: Record<string, unknown>, visitorId: string) {
   try {
     await fetch(PENDO_TRACK_URL, {
       method: "POST",
@@ -18,8 +18,8 @@ async function pendoTrackServer(event: string, properties: Record<string, unknow
       body: JSON.stringify({
         type: "track",
         event,
-        visitorId: "system",
-        accountId: "system",
+        visitorId,
+        accountId: "squint-public",
         timestamp: Date.now(),
         properties,
       }),
@@ -147,7 +147,11 @@ const isLocalUrl = (urlStr: string) => {
 
 export async function POST(req: NextRequest) {
   try {
-    const { url, persona, screenshot: uploadedScreenshot } = await req.json();
+    const { url, persona, screenshot: uploadedScreenshot, pendoVisitorId } = await req.json();
+
+    const visitorId = pendoVisitorId
+      || req.cookies.get("_pendo_anon_id")?.value
+      || "anonymous";
 
     if (!persona || (!url && !uploadedScreenshot)) {
       return NextResponse.json(
@@ -178,7 +182,7 @@ export async function POST(req: NextRequest) {
           url: url || "",
           persona,
           errorMessage: (err.message || "Unknown error").substring(0, 200),
-        });
+        }, visitorId);
 
         return NextResponse.json(
           { error: `Screenshot capture failed: ${err.message || "The screenshot service could not access the URL"}. Please take a screenshot manually and upload it using the fallback uploader below.` },
@@ -246,7 +250,7 @@ export async function POST(req: NextRequest) {
             persona,
             blockType: "ai_detected",
             errorMessage: (auditResult.error as string).substring(0, 200),
-          });
+          }, visitorId);
 
           return NextResponse.json({ error: auditResult.error }, { status: 400 });
         }
@@ -263,7 +267,7 @@ export async function POST(req: NextRequest) {
           persona,
           errorMessage: (error.message || "Unknown error").substring(0, 200),
           hasGeminiKey: true,
-        });
+        }, visitorId);
 
         auditResult = getMockAudit(url || "Uploaded Screenshot", persona);
       }
@@ -276,7 +280,7 @@ export async function POST(req: NextRequest) {
         persona,
         errorMessage: "No GEMINI_API_KEY configured",
         hasGeminiKey: false,
-      });
+      }, visitorId);
 
       auditResult = getMockAudit(url || "Uploaded Screenshot", persona);
     }

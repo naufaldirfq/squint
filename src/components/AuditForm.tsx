@@ -112,6 +112,7 @@ export default function AuditForm() {
           url: url || undefined,
           persona,
           screenshot: screenshot || undefined,
+          pendoVisitorId: typeof window !== "undefined" ? localStorage.getItem("_pendo_anon_id") : undefined,
         }),
       });
 

@@ -57,6 +57,9 @@ if (!visitorId) {
 pendo.initialize({
   visitor: {
     id: visitorId
+  },
+  account: {
+    id: 'squint-public'
   }
 });
             `,
