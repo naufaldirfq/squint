@@ -45,9 +45,14 @@ export default function RootLayout({
     z=e.getElementsByTagName(n)[0];z.parentNode.insertBefore(y,z);})(window,document,'script','pendo');
 })('f69f681c-598b-4b6b-a4f4-e717bee185eb');
 
+var visitorId = localStorage.getItem('_pendo_anon_id');
+if (!visitorId) {
+  visitorId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  localStorage.setItem('_pendo_anon_id', visitorId);
+}
 pendo.initialize({
   visitor: {
-    id: ''
+    id: visitorId
   }
 });
             `,
