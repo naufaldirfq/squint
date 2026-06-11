@@ -125,11 +125,11 @@ export default async function Home() {
                       <span>ScoreCard:</span>
                       <span className="text-blaze-orange">
                         {Math.round(
-                          (audit.scores.valueProp +
-                            audit.scores.primaryAction +
-                            audit.scores.trust +
-                            audit.scores.visualHierarchy +
-                            audit.scores.copy) /
+                          ((audit.scores?.valueProp || 0) +
+                            (audit.scores?.primaryAction || 0) +
+                            (audit.scores?.trust || 0) +
+                            (audit.scores?.visualHierarchy || 0) +
+                            (audit.scores?.copy || 0)) /
                             5
                         )}
                         /10

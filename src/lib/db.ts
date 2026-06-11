@@ -81,9 +81,9 @@ export async function getAudit(id: string): Promise<AuditRecord | null> {
     timestamp: data.timestamp,
     screenshot: data.screenshot,
     fiveSecondRead: data.five_second_read,
-    scores: data.scores as any,
+    scores: data.scores as AuditRecord["scores"],
     narration: data.narration,
-    topFixes: data.top_fixes as any[],
+    topFixes: data.top_fixes as AuditFix[],
   };
 }
 
@@ -108,8 +108,8 @@ export async function listAudits(limit: number = 10): Promise<AuditRecord[]> {
     timestamp: row.timestamp,
     screenshot: row.screenshot,
     fiveSecondRead: row.five_second_read,
-    scores: row.scores as any,
+    scores: row.scores as AuditRecord["scores"],
     narration: row.narration,
-    topFixes: row.top_fixes as any[],
+    topFixes: row.top_fixes as AuditFix[],
   }));
 }

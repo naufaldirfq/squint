@@ -19,11 +19,11 @@ export async function GET(request: Request, { params }: Props) {
 
     const displayUrl = audit.url.replace(/https?:\/\//, "");
     const averageScore = Math.round(
-      (audit.scores.valueProp +
-        audit.scores.primaryAction +
-        audit.scores.trust +
-        audit.scores.visualHierarchy +
-        audit.scores.copy) /
+      ((audit.scores?.valueProp || 0) +
+        (audit.scores?.primaryAction || 0) +
+        (audit.scores?.trust || 0) +
+        (audit.scores?.visualHierarchy || 0) +
+        (audit.scores?.copy || 0)) /
         5
     );
 
@@ -100,11 +100,11 @@ export async function GET(request: Request, { params }: Props) {
             }}
           >
             {[
-              { label: "VALUE-PROP", val: audit.scores.valueProp },
-              { label: "CTA CLARITY", val: audit.scores.primaryAction },
-              { label: "TRUST", val: audit.scores.trust },
-              { label: "HIERARCHY", val: audit.scores.visualHierarchy },
-              { label: "COPY", val: audit.scores.copy },
+              { label: "VALUE-PROP", val: audit.scores?.valueProp || 0 },
+              { label: "CTA CLARITY", val: audit.scores?.primaryAction || 0 },
+              { label: "TRUST", val: audit.scores?.trust || 0 },
+              { label: "HIERARCHY", val: audit.scores?.visualHierarchy || 0 },
+              { label: "COPY", val: audit.scores?.copy || 0 },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -132,7 +132,8 @@ export async function GET(request: Request, { params }: Props) {
         height: 630,
       }
     );
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err as Error;
     console.error("OG Generation Error:", error);
     return new Response(`Failed to generate image: ${error.message}`, { status: 500 });
   }

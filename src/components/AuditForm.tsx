@@ -135,7 +135,8 @@ export default function AuditForm() {
       }
 
       router.push(`/r/${data.id}`);
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error(err);
 
       // Track audit submission failure
@@ -233,6 +234,7 @@ export default function AuditForm() {
                 Screenshot Loaded successfully!
               </span>
               <div className="w-10 h-10 border border-primary overflow-hidden relative bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={screenshot}
                   alt="preview"

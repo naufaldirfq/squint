@@ -84,7 +84,6 @@ You must analyze the landing page screenshot and return your feedback in STRICT 
 `;
 
 function getMockAudit(url: string, persona: string) {
-  const cleanUrl = url.replace(/https?:\/\//, "").replace("www.", "");
   const fixes = [
     {
       id: 1,
@@ -141,7 +140,7 @@ const isLocalUrl = (urlStr: string) => {
   try {
     const cleanUrl = urlStr.trim().replace(/^https?:\/\//i, "");
     return /^(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/i.test(cleanUrl);
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -170,7 +169,8 @@ export async function POST(req: NextRequest) {
       }
       try {
         screenshotBase64 = await captureScreenshot(url);
-      } catch (err: any) {
+      } catch (error: unknown) {
+        const err = error as Error;
         console.error("Screenshot capture failed:", err);
 
         // Track screenshot capture failure
@@ -250,7 +250,8 @@ export async function POST(req: NextRequest) {
 
           return NextResponse.json({ error: auditResult.error }, { status: 400 });
         }
-      } catch (error: any) {
+      } catch (err: unknown) {
+        const error = err as Error;
         console.error("Gemini API call failed, using mock generator:", error);
         // If Gemini threw an error because of the image or parsing, check if we had a parsing error and bubble it up
         if (error.message && error.message.includes("JSON")) {
@@ -293,7 +294,8 @@ export async function POST(req: NextRequest) {
     await saveAudit(record);
 
     return NextResponse.json({ id: auditId });
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err as Error;
     console.error("Audit API handler error:", error);
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
   }

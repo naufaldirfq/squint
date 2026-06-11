@@ -109,40 +109,40 @@ export default async function AuditResultsPage({ params }: PageProps) {
                   <p className="font-mono-label text-mono-label text-on-surface-variant uppercase mb-2 text-xs">
                     Value-Prop
                   </p>
-                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores.valueProp)}`}>
-                    {audit.scores.valueProp}/10
+                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores?.valueProp || 0)}`}>
+                    {audit.scores?.valueProp || 0}/10
                   </p>
                 </div>
                 <div className="bg-surface-container-lowest brutal-border p-4 text-center">
                   <p className="font-mono-label text-mono-label text-on-surface-variant uppercase mb-2 text-xs">
                     Primary Action
                   </p>
-                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores.primaryAction)}`}>
-                    {audit.scores.primaryAction}/10
+                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores?.primaryAction || 0)}`}>
+                    {audit.scores?.primaryAction || 0}/10
                   </p>
                 </div>
                 <div className="bg-surface-container-lowest brutal-border p-4 text-center">
                   <p className="font-mono-label text-mono-label text-on-surface-variant uppercase mb-2 text-xs">
                     Trust
                   </p>
-                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores.trust)}`}>
-                    {audit.scores.trust}/10
+                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores?.trust || 0)}`}>
+                    {audit.scores?.trust || 0}/10
                   </p>
                 </div>
                 <div className="bg-surface-container-lowest brutal-border p-4 text-center">
                   <p className="font-mono-label text-mono-label text-on-surface-variant uppercase mb-2 text-xs">
                     Hierarchy
                   </p>
-                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores.visualHierarchy)}`}>
-                    {audit.scores.visualHierarchy}/10
+                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores?.visualHierarchy || 0)}`}>
+                    {audit.scores?.visualHierarchy || 0}/10
                   </p>
                 </div>
                 <div className="bg-surface-container-lowest brutal-border p-4 text-center col-span-2 md:col-span-1">
                   <p className="font-mono-label text-mono-label text-on-surface-variant uppercase mb-2 text-xs">
                     Copy
                   </p>
-                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores.copy)}`}>
-                    {audit.scores.copy}/10
+                  <p className={`font-headline-lg text-headline-lg ${getScoreColorClass(audit.scores?.copy || 0)}`}>
+                    {audit.scores?.copy || 0}/10
                   </p>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default async function AuditResultsPage({ params }: PageProps) {
                 The Top 3 Fixes
               </h2>
               <div className="flex flex-col gap-12">
-                {audit.topFixes.map((fix, idx) => (
+                {(audit.topFixes || []).map((fix, idx) => (
                   <div key={idx} className="bg-surface-container-lowest brutal-border hard-shadow flex flex-col">
                     <div className="p-4 brutal-border-b bg-surface-variant flex justify-between items-center">
                       <span className="font-mono-label text-mono-label text-primary">
@@ -256,6 +256,7 @@ export default async function AuditResultsPage({ params }: PageProps) {
                     Hover to un-squint
                   </span>
                 </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={audit.screenshot}
                   alt="Website screenshot"
