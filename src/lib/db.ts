@@ -113,3 +113,16 @@ export async function listAudits(limit: number = 10): Promise<AuditRecord[]> {
     topFixes: row.top_fixes as AuditFix[],
   }));
 }
+
+export async function countAudits(): Promise<number> {
+  const { count, error } = await supabase
+    .from("audits")
+    .select("*", { count: "exact", head: true });
+
+  if (error) {
+    console.error("Error counting audits from Supabase:", error);
+    return 0;
+  }
+
+  return count || 0;
+}

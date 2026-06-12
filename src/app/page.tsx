@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { listAudits } from "@/lib/db";
+import { listAudits, countAudits } from "@/lib/db";
 import AuditForm from "@/components/AuditForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const recentAudits = await listAudits(6);
+  const totalAudits = await countAudits();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -49,9 +50,9 @@ export default async function Home() {
               <span className="relative inline-flex rounded-full h-3 w-3 bg-secondary-container"></span>
             </span>
             <span className="font-mono-label text-mono-label uppercase text-on-surface-variant text-xs">
-              {recentAudits.length > 0
-                ? `${1240 + recentAudits.length} pages squinted today`
-                : "1,240 pages squinted today"}
+              {totalAudits > 0
+                ? `${totalAudits.toLocaleString()} pages squinted today`
+                : "0 pages squinted today"}
             </span>
           </div>
         </section>
