@@ -2,6 +2,20 @@
 
 All notable changes to the Squint project will be documented in this file.
 
+## [0.2.0] - 2026-06-13
+
+### Added
+- **Supabase Database Integration:** Added Supabase backend support (`src/lib/db.ts`) alongside the local JSON database storage, complete with migration scripts and SQL schema configurations under `supabase/`.
+- **Pendo Novus SDK Integration:** Integrated Novus by Pendo Web SDK in `src/app/layout.tsx` and declared global types in `src/types/pendo.d.ts` for tracking product usage and visitor sessions.
+- **Pendo Tracking Events:** Instrumented 8 custom track events across client and server (audit submission flows, screenshot uploads, share interactions, API errors, and mock fallbacks).
+- **Chrome Extension Support:** Created the Chrome extension codebase under `extension/` to trigger audits from the toolbar. Wrote `CHROMEWEBSTORE.md` listing graphics, permissions justifications, and privacy disclosures.
+- **Squint Intro Video Composition:** Created a HyperFrames video composition under `videos/squint-intro/` complete with design/storyboard specs, sound effects, voiceover transcripts, and GSAP visual animation.
+- **Interactive UI Components:** Introduced `Checklist.tsx`, `ExportButtons.tsx`, and `ScreenshotView.tsx` components to audit results.
+
+### Fixed
+- **Analytics Session Tracking:** Resolved an issue where visitor and page views count was recorded as zero.
+- **TypeScript & Build Safeguards:** Added runtime safeguards for missing AI properties and resolved various lint/compiler errors.
+
 ## [0.1.0] - 2026-06-09
 
 ### Added
