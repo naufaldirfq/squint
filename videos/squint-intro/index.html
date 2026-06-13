@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>Squint Intro Video</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+        font-family: 'Inter', sans-serif;
+      }
+      .monospace {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      
+      /* Base Scene wrapper */
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #f9f9f9;
+      }
+
+      /* Stacked Beats CSS */
+      .beat {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        overflow: hidden;
+        background: #f9f9f9;
+      }
+
+      /* Neo-Brutalist Common Styles */
+      .neo-card {
+        background: #ffffff;
+        border: 4px solid #000000;
+        box-shadow: 12px 12px 0px 0px #000000;
+        border-radius: 0px;
+      }
+      .neo-btn {
+        background: #ff4d00;
+        color: #ffffff;
+        border: 4px solid #000000;
+        box-shadow: 6px 6px 0px 0px #000000;
+        border-radius: 0px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      /* BEAT 1: HOOK */
+      #b1 {
+        background: #ff4d00;
+        opacity: 1; /* First beat starts visible */
+      }
+      .b1-card {
+        width: 1100px;
+        padding: 60px 80px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+      .b1-title {
+        font-size: 84px;
+        font-weight: 900;
+        letter-spacing: -3px;
+        line-height: 1.0;
+        color: #000;
+        text-transform: uppercase;
+      }
+      .b1-subtitle {
+        font-size: 48px;
+        font-weight: 800;
+        color: #ff4d00;
+        letter-spacing: -1.5px;
+        text-transform: uppercase;
+      }
+
+      /* BEAT 2: THE AUDIT */
+      #b2 {
+        background: #f9f9f9;
+      }
+      .browser-mockup {
+        width: 1200px;
+        height: 700px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .browser-header {
+        height: 60px;
+        background: #e2e2e2;
+        border-bottom: 4px solid #000;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        gap: 15px;
+      }
+      .browser-dot {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #000;
+        border-radius: 50%;
+      }
+      .browser-dot.red { background: #ff5f56; }
+      .browser-dot.yellow { background: #ffbd2e; }
+      .browser-dot.green { background: #27c93f; }
+      .browser-address {
+        flex-grow: 1;
+        height: 36px;
+        background: #ffffff;
+        border: 2px solid #000;
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        font-size: 16px;
+        color: #666;
+        font-weight: 500;
+      }
+      .browser-content {
+        flex-grow: 1;
+        background: #f9f9f9;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        position: relative;
+        gap: 30px;
+      }
+      .audit-input-container {
+        width: 800px;
+        display: flex;
+        border: 4px solid #000;
+        box-shadow: 8px 8px 0px 0px #000;
+      }
+      .audit-input {
+        flex-grow: 1;
+        height: 70px;
+        background: #fff;
+        border-right: 4px solid #000;
+        padding: 0 25px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        color: #000;
+      }
+      .audit-btn {
+        width: 200px;
+        height: 70px;
+        background: #ff4d00;
+        color: #fff;
+        font-size: 24px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .mouse-cursor {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        z-index: 100;
+        pointer-events: none;
+      }
+      .laser-sweep {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: rgba(255, 77, 0, 0.8);
+        box-shadow: 0 0 20px 8px rgba(255, 77, 0, 0.8);
+        pointer-events: none;
+      }
+
+      /* BEAT 3: THE CRITICS */
+      #b3 {
+        background: #e2e2e2;
+      }
+      .critics-container {
+        display: flex;
+        gap: 60px;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0 100px;
+      }
+      .critic-card {
+        width: 500px;
+        height: 480px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .critic-header {
+        height: 70px;
+        background: #000;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 25px;
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: 1px;
+      }
+      .critic-tag {
+        font-size: 12px;
+        background: #ff4d00;
+        color: #fff;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+      .critic-tag.green {
+        background: #62ff96;
+        color: #000;
+      }
+      .critic-body {
+        flex-grow: 1;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: #ffffff;
+      }
+      .speech-bubble {
+        font-size: 26px;
+        line-height: 1.4;
+        font-weight: 700;
+        color: #000;
+        font-style: italic;
+      }
+
+      /* BEAT 4: SCORECARD & MOCKUPS */
+      #b4 {
+        background: #f9f9f9;
+      }
+      .b4-layout {
+        display: flex;
+        width: 1400px;
+        height: 700px;
+        gap: 60px;
+      }
+      .scorecard-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 40px;
+        justify-content: center;
+        gap: 30px;
+      }
+      .scorecard-header {
+        font-size: 32px;
+        font-weight: 900;
+        border-bottom: 4px solid #000;
+        padding-bottom: 15px;
+        text-transform: uppercase;
+      }
+      .score-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 22px;
+        font-weight: 700;
+        padding: 10px 0;
+        border-bottom: 2px dashed #ccc;
+      }
+      .score-bar-bg {
+        width: 250px;
+        height: 20px;
+        border: 2px solid #000;
+        background: #e2e2e2;
+        position: relative;
+      }
+      .score-bar-fill {
+        height: 100%;
+        background: #ff4d00;
+      }
+      .score-bar-fill.green {
+        background: #62ff96;
+      }
+      .overall-score-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #000;
+        color: #fff;
+        padding: 25px;
+        margin-top: 20px;
+        border: 3px solid #000;
+      }
+      .overall-score-title {
+        font-size: 24px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .overall-score-num {
+        font-size: 48px;
+        font-weight: 900;
+        color: #ff4d00;
+      }
+      
+      .mockup-panel {
+        flex: 1.2;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+      }
+      .mockup-header {
+        height: 60px;
+        background: #e2e2e2;
+        border-bottom: 4px solid #000;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        font-weight: 800;
+        font-size: 20px;
+        text-transform: uppercase;
+      }
+      .mockup-slider-container {
+        flex-grow: 1;
+        position: relative;
+        overflow: hidden;
+        background: #fff;
+      }
+      .mockup-state {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 60px;
+        gap: 20px;
+      }
+      .mockup-state.after {
+        background: #62ff96;
+        color: #000;
+      }
+      .mockup-state.before {
+        background: #ffffff;
+        color: #999;
+      }
+      .mockup-label {
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        background: #000;
+        color: #fff;
+        padding: 4px 10px;
+        align-self: flex-start;
+      }
+      .mockup-state.before .mockup-label {
+        background: #888;
+      }
+      .mockup-text {
+        font-size: 36px;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+      .slider-bar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        background: #000;
+        left: 50%;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .slider-handle {
+        width: 40px;
+        height: 40px;
+        background: #ff4d00;
+        border: 4px solid #000;
+        border-radius: 50%;
+      }
+
+      /* BEAT 5: OUTRO */
+      #b5 {
+        background: #ff4d00;
+      }
+      .b5-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        text-align: center;
+      }
+      .b5-logo {
+        font-size: 140px;
+        font-weight: 900;
+        color: #000;
+        letter-spacing: -6px;
+        text-shadow: 10px 10px 0px #ffffff;
+        text-transform: uppercase;
+        line-height: 1;
+      }
+      .b5-card {
+        background: #ffffff;
+        border: 4px solid #000;
+        box-shadow: 8px 8px 0px 0px #000;
+        padding: 25px 50px;
+        margin-top: 10px;
+      }
+      .b5-tagline {
+        font-size: 36px;
+        font-weight: 800;
+        color: #000;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-f5xk" id="root" data-composition-id="main" data-start="0" data-duration="27.9" data-width="1920" data-height="1080">
+      
+      <!-- BEAT 1: HOOK (0.00s - 4.35s) -->
+      <div data-hf-id="hf-ug5h" class="beat" id="b1">
+        <div data-hf-id="hf-284b" class="neo-card b1-card">
+          <div data-hf-id="hf-9yrz" class="b1-subtitle monospace">SQUINT AUDITS</div>
+          <h1 data-hf-id="hf-6bb4" class="b1-title">STOP GUESSING.<br data-hf-id="hf-x5px">GET SQUINTED.</h1>
+        </div>
+      </div>
+
+      <!-- BEAT 2: THE AUDIT (4.35s - 11.20s) -->
+      <div data-hf-id="hf-ye9i" class="beat" id="b2">
+        <div data-hf-id="hf-da0z" class="neo-card browser-mockup">
+          <div data-hf-id="hf-4e8i" class="browser-header">
+            <div data-hf-id="hf-ea7r" class="browser-dot red"></div>
+            <div data-hf-id="hf-87m2" class="browser-dot yellow"></div>
+            <div data-hf-id="hf-5y63" class="browser-dot green"></div>
+            <div data-hf-id="hf-25zd" class="browser-address monospace">http://localhost:3000/</div>
+          </div>
+          <div data-hf-id="hf-8n6o" class="browser-content">
+            <div data-hf-id="hf-8xfs" class="audit-input-container">
+              <div data-hf-id="hf-m44s" class="audit-input monospace url-text"></div>
+              <div data-hf-id="hf-rpft" class="audit-btn">Audit</div>
+            </div>
+            
+            <!-- Laser scan sweep -->
+            <div data-hf-id="hf-oksl" class="laser-sweep" style="top: -10%;"></div>
+            
+            <!-- Composed cursor -->
+            <svg data-hf-id="hf-oe7c" class="mouse-cursor" viewBox="0 0 24 24" fill="none" style="left: 80%; top: 80%;">
+              <path data-hf-id="hf-fhs6" d="M4.5 3v15.2l3.8-3.8 2.5 5.8 2.8-1.2-2.5-5.8 5.1-.2L4.5 3z" fill="#000" stroke="#fff" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- BEAT 3: THE CRITICS (11.20s - 16.40s) -->
+      <div data-hf-id="hf-2cdj" class="beat" id="b3">
+        <div data-hf-id="hf-4otp" class="critics-container">
+          <!-- Critic 1: Busy Founder -->
+          <div data-hf-id="hf-p31g" class="neo-card critic-card critic-left">
+            <div data-hf-id="hf-sb46" class="critic-header">
+              <span data-hf-id="hf-cnvb">BUSY FOUNDER</span>
+              <span data-hf-id="hf-aajn" class="critic-tag monospace">NO PATIENCE</span>
+            </div>
+            <div data-hf-id="hf-afmx" class="critic-body">
+              <div data-hf-id="hf-4won" class="speech-bubble speech-left">"What does this even do? Way too much generic corporate fluff."</div>
+            </div>
+          </div>
+          
+          <!-- Critic 2: Skeptical Engineer -->
+          <div data-hf-id="hf-j6or" class="neo-card critic-card critic-right">
+            <div data-hf-id="hf-e98q" class="critic-header">
+              <span data-hf-id="hf-qexg">SKEPTICAL ENGINEER</span>
+              <span data-hf-id="hf-wywj" class="critic-tag green monospace">JARGON HATER</span>
+            </div>
+            <div data-hf-id="hf-xgnx" class="critic-body">
+              <div data-hf-id="hf-yehf" class="speech-bubble speech-right">"Show me the code. Where is your pricing page?"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BEAT 4: SCORECARD & MOCKUPS (16.40s - 22.00s) -->
+      <div data-hf-id="hf-6ahk" class="beat" id="b4">
+        <div data-hf-id="hf-gk09" class="b4-layout">
+          <!-- Scorecard Panel -->
+          <div data-hf-id="hf-qv13" class="neo-card scorecard-panel score-panel">
+            <div data-hf-id="hf-wh67" class="scorecard-header">Scan Scorecard</div>
+            <div data-hf-id="hf-v0yh" class="score-row">
+              <span data-hf-id="hf-7v52">Value Proposition</span>
+              <div data-hf-id="hf-gg5m" class="score-bar-bg"><div data-hf-id="hf-fwaq" class="score-bar-fill" style="width: 40%;"></div></div>
+            </div>
+            <div data-hf-id="hf-q0dp" class="score-row">
+              <span data-hf-id="hf-okj4">Clarity &amp; Jargon</span>
+              <div data-hf-id="hf-yu1a" class="score-bar-bg"><div data-hf-id="hf-ksrj" class="score-bar-fill" style="width: 30%;"></div></div>
+            </div>
+            <div data-hf-id="hf-r7as" class="score-row">
+              <span data-hf-id="hf-bgr4">Trust Signals</span>
+              <div data-hf-id="hf-z8cb" class="score-bar-bg"><div data-hf-id="hf-ssot" class="score-bar-fill" style="width: 50%;"></div></div>
+            </div>
+            <div data-hf-id="hf-5v02" class="overall-score-box">
+              <span data-hf-id="hf-vqsn" class="overall-score-title">Overall Score</span>
+              <span data-hf-id="hf-2vap" class="overall-score-num monospace"><span data-hf-id="hf-fmct" class="score-val">4</span>/10</span>
+            </div>
+          </div>
+
+          <!-- Mockup Panel -->
+          <div data-hf-id="hf-z5nj" class="neo-card mockup-panel">
+            <div data-hf-id="hf-4vbr" class="mockup-header">Mockup Transformation</div>
+            <div data-hf-id="hf-rvf3" class="mockup-slider-container">
+              <!-- After state -->
+              <div data-hf-id="hf-q0b7" class="mockup-state after">
+                <span data-hf-id="hf-20d4" class="mockup-label" style="align-self: flex-end;">AFTER SQUINT FIX</span>
+                <div data-hf-id="hf-r67s" class="mockup-text font-display">Stop Guessing. <br data-hf-id="hf-rsrt">Get Squinted in 5 Seconds.</div>
+              </div>
+              
+              <!-- Before state (clipped by slider) -->
+              <div data-hf-id="hf-numh" class="mockup-state before" id="b4-before" style="clip-path: inset(0 50% 0 0); width: 100%;">
+                <span data-hf-id="hf-0m0y" class="mockup-label">BEFORE</span>
+                <div data-hf-id="hf-kb69" class="mockup-text font-display">Next-gen AI synergy platform for optimization.</div>
+              </div>
+              
+              <!-- Slider handle line -->
+              <div data-hf-id="hf-rguq" class="slider-bar" id="b4-slider" style="left: 50%;" data-layout-allow-overflow="">
+                <div data-hf-id="hf-s9wa" class="slider-handle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BEAT 5: OUTRO (22.00s - 27.90s) -->
+      <div data-hf-id="hf-99r5" class="beat" id="b5">
+        <div data-hf-id="hf-mtq9" class="b5-container">
+          <div data-hf-id="hf-g1ec" class="b5-logo outro-logo">SQUINT</div>
+          <div data-hf-id="hf-1eo2" class="b5-card outro-border">
+            <div data-hf-id="hf-b0aa" class="b5-tagline outro-tagline">Stop hoping. Audit now.</div>
+            <div data-hf-id="hf-c0gi" class="b5-url outro-url monospace neo-btn" style="font-size: 28px; padding: 15px 30px; margin-top: 25px; display: inline-block; text-transform: none; color: #000000;">https://squint-web.vercel.app/</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIO TRACKS -->
+      <!-- Narration voiceover -->
+      <audio data-hf-id="hf-3c1i" id="narration" src="narration.wav" data-start="0.2" data-duration="26.9" data-track-index="0" data-volume="1"></audio>
+      
+      <!-- SFX tracks -->
+      <audio data-hf-id="hf-oneo" id="sfx-beat1" src="sfx/impact-bass-1.mp3" data-start="0.1" data-duration="2.12" data-track-index="10" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-nw1g" id="sfx-beat2" src="sfx/click.mp3" data-start="6.55" data-duration="0.37" data-track-index="11" data-volume="0.3"></audio>
+      <audio data-hf-id="hf-3ri0" id="sfx-beat3-1" src="sfx/pop.mp3" data-start="11.5" data-duration="0.72" data-track-index="12" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-konc" id="sfx-beat3-2" src="sfx/pop.mp3" data-start="12.2" data-duration="0.72" data-track-index="13" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-08sf" id="sfx-beat4" src="sfx/ping.mp3" data-start="17.6" data-duration="1.32" data-track-index="14" data-volume="0.3"></audio>
+      <audio data-hf-id="hf-p7xa" id="sfx-beat5" src="sfx/whoosh-cinematic.mp3" data-start="22.0" data-duration="5.54" data-track-index="15" data-volume="0.4"></audio>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // BEATS SEQUENCE OBJECTS
+      const beats = [
+        { id: "b1", start: 0.0, duration: 4.35 },
+        { id: "b2", start: 4.35, duration: 6.85 },
+        { id: "b3", start: 11.20, duration: 5.20 },
+        { id: "b4", start: 16.40, duration: 5.60 },
+        { id: "b5", start: 22.00, duration: 5.90 }
+      ];
+
+      // ORCHESTRATE BEAT VISIBILITY
+      beats.forEach((b, index) => {
+        // Show current beat
+        if (index > 0) {
+          tl.set(`#${b.id}`, { opacity: 1 }, b.start);
+        }
+        
+        // Hide previous beat when current starts
+        if (index > 0) {
+          const prev = beats[index - 1];
+          tl.set(`#${prev.id}`, { opacity: 0 }, b.start);
+        }
+      });
+
+      // ==========================================
+      // BEAT 1 ANIMATIONS (0.00s - 4.35s)
+      // ==========================================
+      // Card entrance (Scale & slam)
+      tl.fromTo(".b1-card", 
+        { scale: 0, rotation: -10, opacity: 0 }, 
+        { scale: 1, rotation: 0, opacity: 1, duration: 0.8, ease: "back.out(1.5)" }, 
+        0.1
+      );
+      // Camera dolly-out
+      tl.fromTo("#b1", 
+        { scale: 1.05 }, 
+        { scale: 1.0, duration: 4.35, ease: "none" }, 
+        0
+      );
+
+      // ==========================================
+      // BEAT 2 ANIMATIONS (4.35s - 11.20s)
+      // ==========================================
+      // Browser window enters
+      tl.fromTo(".browser-mockup", 
+        { y: 800, opacity: 0, scale: 0.95 }, 
+        { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "power3.out" }, 
+        4.35
+      );
+      // Type URL text
+      tl.fromTo(".url-text", 
+        { textContent: "" }, 
+        { textContent: "http://localhost:3000/", duration: 1.2, ease: "none" }, 
+        5.15
+      );
+      // Mouse cursor snaps to the "Audit" button
+      tl.fromTo(".mouse-cursor", 
+        { left: "80%", top: "80%" }, 
+        { left: "70%", top: "45%", duration: 0.6, ease: "power2.out" }, 
+        6.35
+      );
+      // Button depress
+      tl.to(".audit-btn", 
+        { scale: 0.96, duration: 0.1, yoyo: true, repeat: 1, ease: "power1.inOut" }, 
+        6.95
+      );
+      // Scanning laser sweeps down
+      tl.fromTo(".laser-sweep", 
+        { top: "-10%" }, 
+        { top: "110%", duration: 2.0, ease: "power1.inOut" }, 
+        7.15
+      );
+      // Subtle camera pan during the beat
+      tl.fromTo("#b2", 
+        { x: -15, y: -10, scale: 1.02 }, 
+        { x: 15, y: 10, scale: 1.0, duration: 6.85, ease: "sine.inOut" }, 
+        4.35
+      );
+
+      // ==========================================
+      // BEAT 3 ANIMATIONS (11.20s - 16.40s)
+      // ==========================================
+      // Critic 1 slides in from left
+      tl.fromTo(".critic-left", 
+        { x: -800, rotation: -8, opacity: 0 }, 
+        { x: 0, rotation: -2, opacity: 1, duration: 0.7, ease: "back.out(1.2)" }, 
+        11.20
+      );
+      // Critic 1 speech bubble pops
+      tl.fromTo(".speech-left", 
+        { scale: 0.8, opacity: 0 }, 
+        { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.5)" }, 
+        11.50
+      );
+      
+      // Critic 2 slides in from right
+      tl.fromTo(".critic-right", 
+        { x: 800, rotation: 8, opacity: 0 }, 
+        { x: 0, rotation: 2, opacity: 1, duration: 0.7, ease: "back.out(1.2)" }, 
+        11.90
+      );
+      // Critic 2 speech bubble pops
+      tl.fromTo(".speech-right", 
+        { scale: 0.8, opacity: 0 }, 
+        { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.5)" }, 
+        12.20
+      );
+      
+      // Camera dolly-in during details
+      tl.fromTo("#b3", 
+        { scale: 0.98 }, 
+        { scale: 1.03, duration: 5.20, ease: "none" }, 
+        11.20
+      );
+
+      // ==========================================
+      // BEAT 4 ANIMATIONS (16.40s - 22.00s)
+      // ==========================================
+      // Panel entrances
+      tl.fromTo(".score-panel", 
+        { x: -700, opacity: 0 }, 
+        { x: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 
+        16.40
+      );
+      tl.fromTo(".mockup-panel", 
+        { x: 700, opacity: 0 }, 
+        { x: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 
+        16.40
+      );
+      // Staggered score row entry
+      tl.fromTo(".score-row", 
+        { x: -50, opacity: 0 }, 
+        { x: 0, opacity: 1, stagger: 0.15, duration: 0.4, ease: "power2.out" }, 
+        16.80
+      );
+      // Overall score counter rolls up 4 -> 8
+      tl.fromTo(".score-val", 
+        { textContent: "4" }, 
+        { textContent: "8", duration: 1.2, snap: { textContent: 1 }, ease: "power1.out" }, 
+        17.40
+      );
+      // Split slider divider sweeps left (reveals "After" state by clipping "Before" container)
+      tl.fromTo("#b4-before", 
+        { clipPath: "inset(0 0% 0 0)" }, 
+        { clipPath: "inset(0 100% 0 0)", duration: 1.8, ease: "power2.inOut" }, 
+        17.80
+      );
+      tl.fromTo("#b4-slider", 
+        { left: "100%" }, 
+        { left: "0%", duration: 1.8, ease: "power2.inOut" }, 
+        17.80
+      );
+      // Camera dolly-out
+      tl.fromTo("#b4", 
+        { scale: 1.04 }, 
+        { scale: 1.0, duration: 5.60, ease: "none" }, 
+        16.40
+      );
+
+      // ==========================================
+      // BEAT 5 ANIMATIONS (22.00s - 27.90s)
+      // ==========================================
+      // Logo slams down
+      tl.fromTo(".outro-logo", 
+        { y: -600, scale: 0.7, opacity: 0 }, 
+        { y: 0, scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.8)" }, 
+        22.00
+      );
+      // Outro tagline border draws / scales
+      tl.fromTo(".outro-border", 
+        { scaleX: 0, opacity: 0 }, 
+        { scaleX: 1, opacity: 1, duration: 0.6, ease: "expo.out" }, 
+        22.60
+      );
+      // Outro tagline types/fade-ups
+      tl.fromTo(".outro-tagline", 
+        { y: 20, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 
+        22.90
+      );
+      // Outro URL button entrance
+      tl.fromTo(".outro-url", 
+        { y: 20, opacity: 0, scale: 0.9 }, 
+        { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)" }, 
+        23.25
+      );
+      // Outro screen zoom-in
+      tl.fromTo("#b5", 
+        { scale: 1.0 }, 
+        { scale: 1.05, duration: 5.90, ease: "sine.inOut" }, 
+        22.00
+      );
+
+      // Register timeline
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

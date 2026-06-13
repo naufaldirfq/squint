@@ -39,3 +39,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agents & local skills
+.agents/
+
+# hyperframes videos
+videos/**/renders/
+videos/**/snapshots/
+videos/**/capture/
+videos/**/.waveform-cache/
+videos/**/*.wav
+videos/**/test-tts.wav
+
+# local review screenshots
+/image.png
+/hyperform_mockup-transformation.png
+

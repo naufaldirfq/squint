@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Squint Extension",
+  "version": "1.0.0",
+  "description": "Run brutally honest 5-second audits by AI personas directly from your browser toolbar.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

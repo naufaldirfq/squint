@@ -1,17 +1,26 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AuditForm() {
+function AuditFormInner() {
   const router = useRouter();
-  const [url, setUrl] = useState("");
-  const [persona, setPersona] = useState("founder");
+  const searchParams = useSearchParams();
+  
+  const initialUrl = searchParams.get("url") || "";
+  const initialCompetitorUrl = searchParams.get("competitorUrl") || "";
+  const initialPersona = searchParams.get("persona") || "founder";
+
+  const [url, setUrl] = useState(initialUrl);
+  const [persona, setPersona] = useState(initialPersona);
+  const [customPersonaDescription, setCustomPersonaDescription] = useState("");
   const [screenshot, setScreenshot] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [competitorUrl, setCompetitorUrl] = useState(initialCompetitorUrl);
+  const [showCompetitor, setShowCompetitor] = useState(!!initialCompetitorUrl);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -110,7 +119,9 @@ export default function AuditForm() {
         },
         body: JSON.stringify({
           url: url || undefined,
+          competitorUrl: (showCompetitor && competitorUrl) ? competitorUrl : undefined,
           persona,
+          customPersonaDescription: persona === "custom" ? customPersonaDescription : undefined,
           screenshot: screenshot || undefined,
           pendoVisitorId: typeof window !== "undefined" ? localStorage.getItem("_pendo_anon_id") : undefined,
         }),
@@ -184,6 +195,36 @@ export default function AuditForm() {
           >
             {isLoading ? "Squinting..." : "Audit"}
           </button>
+        </div>
+
+        {/* Competitor Input Toggle */}
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => setShowCompetitor(!showCompetitor)}
+            className="text-left font-mono-label text-xs uppercase text-primary hover:underline self-start flex items-center gap-1"
+          >
+            <span className="material-symbols-outlined text-sm">
+              {showCompetitor ? "remove" : "add"}
+            </span>
+            Compare with Competitor (Optional)
+          </button>
+          
+          {showCompetitor && (
+            <div className="flex flex-col md:flex-row gap-4 input-focus-ring bg-surface-container-low border-2 border-primary/50 p-2 transition-all duration-200">
+              <div className="flex-grow flex items-center px-4">
+                <span className="material-symbols-outlined text-surface-tint mr-2">compare_arrows</span>
+                <input
+                  type="text"
+                  value={competitorUrl}
+                  onChange={(e) => setCompetitorUrl(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full bg-transparent border-none focus:outline-none text-body-lg font-body-lg h-12 text-primary placeholder-surface-tint"
+                  placeholder="https://competitor.com"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Screenshot Upload Fallback */}
@@ -317,8 +358,69 @@ export default function AuditForm() {
                 </span>
               </div>
             </label>
+
+            <label className="cursor-pointer group flex-1">
+              <input
+                type="radio"
+                name="persona"
+                value="inclusive"
+                checked={persona === "inclusive"}
+                onChange={(e) => setPersona(e.target.value)}
+                disabled={isLoading}
+                className="sr-only"
+              />
+              <div className={`flex flex-col items-center p-3 border-2 border-primary transition-colors ${
+                persona === "inclusive"
+                  ? "bg-primary text-white"
+                  : "bg-white text-primary hover:bg-surface-variant"
+              }`}>
+                <span className="material-symbols-outlined mb-1">accessibility_new</span>
+                <span className="font-mono-label text-mono-label text-xs uppercase text-center">
+                  Inclusive Designer
+                </span>
+              </div>
+            </label>
+
+            <label className="cursor-pointer group flex-1">
+              <input
+                type="radio"
+                name="persona"
+                value="custom"
+                checked={persona === "custom"}
+                onChange={(e) => setPersona(e.target.value)}
+                disabled={isLoading}
+                className="sr-only"
+              />
+              <div className={`flex flex-col items-center p-3 border-2 border-primary transition-colors ${
+                persona === "custom"
+                  ? "bg-primary text-white"
+                  : "bg-white text-primary hover:bg-surface-variant"
+              }`}>
+                <span className="material-symbols-outlined mb-1">psychology</span>
+                <span className="font-mono-label text-mono-label text-xs uppercase text-center">
+                  Custom Critic
+                </span>
+              </div>
+            </label>
           </div>
         </div>
+
+        {persona === "custom" && (
+          <div className="flex flex-col gap-2 bg-surface-container-low brutal-border p-4 transition-all duration-200">
+            <label className="font-mono-label text-mono-label text-primary text-xs uppercase font-bold">
+              Describe your Custom Persona:
+            </label>
+            <input
+              type="text"
+              value={customPersonaDescription}
+              onChange={(e) => setCustomPersonaDescription(e.target.value)}
+              disabled={isLoading}
+              className="w-full bg-white border-2 border-primary focus:outline-none p-3 text-body-md text-primary font-body-md input-focus-ring"
+              placeholder="e.g. Skeptical CFO, Gen-Z Gamer, Impatient Developer..."
+              required
+            />
+          </div>
+        )}
 
         {/* Loading / Progress State */}
         {isLoading && (
@@ -342,5 +444,17 @@ export default function AuditForm() {
         )}
       </form>
     </div>
+  );
+}
+
+export default function AuditForm() {
+  return (
+    <Suspense fallback={
+      <div className="w-full max-w-3xl mx-auto bg-white border-2 border-primary shadow-hard-card p-6 md:p-8 flex flex-col gap-6 items-center justify-center font-mono">
+        <span className="animate-pulse">Loading audit form...</span>
+      </div>
+    }>
+      <AuditFormInner />
+    </Suspense>
   );
 }

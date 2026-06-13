@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Squint Page Audit</title>
+  <style>
+    body {
+      width: 320px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f9f9f9;
+      color: #000000;
+      margin: 0;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 900;
+      margin-top: 0;
+      margin-bottom: 12px;
+      letter-spacing: -0.04em;
+      border-bottom: 2px solid #000000;
+      padding-bottom: 8px;
+    }
+    .url-display {
+      font-family: monospace;
+      font-size: 11px;
+      background: #e2e2e2;
+      padding: 6px;
+      border: 1px solid #000000;
+      word-break: break-all;
+      margin-bottom: 16px;
+    }
+    .label {
+      font-family: monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .persona-select {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 2px solid #000000;
+      border-radius: 0;
+      background: #ffffff;
+      margin-bottom: 16px;
+      box-shadow: 2px 2px 0px #000000;
+      outline: none;
+    }
+    .audit-btn {
+      width: 100%;
+      background-color: #FF4D00;
+      color: #ffffff;
+      border: 2px solid #000000;
+      border-radius: 0;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px #000000;
+      transition: transform 0.05s, box-shadow 0.05s;
+    }
+    .audit-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px #000000;
+    }
+    .audit-btn:disabled {
+      background-color: #e2e2e2;
+      color: #7e7576;
+      cursor: not-allowed;
+      box-shadow: 0px 0px 0px #000000;
+      transform: none;
+    }
+    .status {
+      margin-top: 16px;
+      font-size: 12px;
+      font-family: monospace;
+      text-transform: uppercase;
+      text-align: center;
+      color: #FF4D00;
+      display: none;
+      font-weight: bold;
+    }
+    .error {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #ba1a1a;
+      border: 2px solid #ba1a1a;
+      padding: 8px;
+      background: #ffdad6;
+      display: none;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h1>SQUINT</h1>
+  
+  <span class="label">Target URL</span>
+  <div id="url" class="url-display">Loading...</div>
+  
+  <span class="label">Choose Critic</span>
+  <select id="persona" class="persona-select">
+    <option value="founder">Busy Founder</option>
+    <option value="engineer">Skeptical Engineer</option>
+    <option value="buyer">Non-technical Buyer</option>
+    <option value="inclusive">Inclusive Designer</option>
+  </select>
+  
+  <button id="auditBtn" class="audit-btn">Squint Audit</button>
+  
+  <div id="status" class="status">Capturing viewport...</div>
+  <div id="error" class="error"></div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

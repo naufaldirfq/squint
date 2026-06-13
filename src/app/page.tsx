@@ -51,8 +51,8 @@ export default async function Home() {
             </span>
             <span className="font-mono-label text-mono-label uppercase text-on-surface-variant text-xs">
               {totalAudits > 0
-                ? `${totalAudits.toLocaleString()} pages squinted today`
-                : "0 pages squinted today"}
+                ? `${totalAudits.toLocaleString()} total pages squinted`
+                : "0 pages squinted"}
             </span>
           </div>
         </section>
@@ -148,9 +148,6 @@ export default async function Home() {
       <footer className="bg-primary text-on-primary border-t-2 border-primary">
         <div className="flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-12 gap-8 max-w-container-max mx-auto">
           <span className="font-display text-headline-sm text-on-primary font-black">SQUINT</span>
-          <span className="font-mono-label text-mono-label text-on-primary opacity-80 uppercase text-xs">
-            Built for MtP Hackathon
-          </span>
           <nav className="flex gap-6">
             <Link
               href="/"
